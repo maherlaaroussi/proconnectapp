@@ -34,7 +34,7 @@ jobs:
 
       # Nouvelle étape : Export Expo pour le Web
       - name: Export Expo for Web
-        run: npx expo export:web
+        run: npx expo export --platform web
 
       - name: Build And Deploy
         id: builddeploy
@@ -45,7 +45,7 @@ jobs:
           action: "upload"
           app_location: "/" # Chemin du code source de l'application
           api_location: "" # Chemin du code source de l'API - optionnel
-          output_location: "web-build" # Dossier de contenu généré par expo export:web
+          output_location: "dist" # Dossier de contenu généré par expo export:web
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
