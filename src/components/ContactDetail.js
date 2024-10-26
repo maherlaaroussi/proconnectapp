@@ -1,112 +1,99 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { globalStyles } from '../styles/globalStyles';
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 
-export default function ContactList({ navigation }) {
-  const [contacts, setContacts] = useState([]);
+export default function ContactDetail({ route }) {
+  const { id } = route.params;
+  const [contact, setContact] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact')
-      .then((response) => response.json())
-      .then((data) => setContacts(data));
-  }, []);
-
-  const supprimerContact = (id) => {
-    Alert.alert(
-      "Supprimer Contact",
-      "Êtes-vous sûr de vouloir supprimer ce contact ?",
-      [
-        {
-          text: "Annuler",
-          style: "cancel"
-        },
-        {
-          text: "Supprimer",
-          onPress: () => {
-            fetch(`https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact/${id}`, {
-              method: 'DELETE',
-            }).then(() => {
-              setContacts(contacts.filter((contact) => contact.id !== id));
-              Alert.alert("Contact supprimé", "Le contact a été supprimé avec succès.", [
-                { text: "OK" }
-              ]);
-            }).catch((error) => {
-              console.error("Erreur lors de la suppression:", error);
-              Alert.alert("Erreur", "Une erreur est survenue lors de la suppression du contact.", [
-                { text: "OK" }
-              ]);
-            });
-          },
-          style: "destructive"
+    fetch(`https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des données du contact');
         }
-      ]
+        return response.json();
+      })
+      .then((data) => {
+        setContact(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FF0000" />
+        <Text>Chargement...</Text>
+      </View>
     );
-  };
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Erreur : {error}</Text>
+      </View>
+    );
+  }
+
+  if (!contact) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Impossible de charger les détails du contact.</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={globalStyles.container}>
-      <TouchableOpacity
-        style={globalStyles.button}
-        onPress={() => navigation.navigate('Nouveau Contact')}
-      >
-        <Text style={globalStyles.buttonText}>Ajouter un Contact</Text>
-      </TouchableOpacity>
-      <FlatList
-        data={contacts}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.listItem}>
-            <TouchableOpacity
-              style={styles.detailsContainer}
-              onPress={() => navigation.navigate('Détails du Contact', { id: item.id })}
-            >
-              <Text style={styles.listItemText}>
-                {item.firstName} {item.lastName}
-              </Text>
-              <Text style={{ color: '#666' }}>{item.email}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => supprimerContact(item.id)}
-            >
-              <Text style={styles.deleteButtonText}>Supprimer</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    </View>
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>Nom: {contact.firstName ?? 'Non disponible'} {contact.lastName ?? 'Non disponible'}</Text>
+      <Text style={styles.detail}>Email: {contact.email ?? 'Non disponible'}</Text>
+      <Text style={styles.detail}>Téléphone: {contact.phoneNumber ?? 'Non disponible'}</Text>
+      <Text style={styles.detail}>Opportunity: {contact.opportunity ?? 'Non disponible'}</Text>
+      <Text style={styles.detail}>LinkedIn Profile: {contact.linkedInProfile ?? 'Non disponible'}</Text>
+      <Text style={styles.detail}>Relationship: {contact.relationship ?? 'Non disponible'}</Text>
+      <Text style={styles.detail}>Contacted: {contact.contacted !== undefined ? (contact.contacted ? 'Oui' : 'Non') : 'Non disponible'}</Text>
+      <Text style={styles.detail}>Position: {contact.position ?? 'Non disponible'}</Text>
+      <Text style={styles.detail}>Company: {contact.company ?? 'Non disponible'}</Text>
+      <Text style={styles.detail}>Company Website: {contact.companyWebsite ?? 'Non disponible'}</Text>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
-    marginVertical: 8,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  container: {
+    padding: 20,
+    backgroundColor: '#FFFFFF',
   },
-  detailsContainer: {
+  loadingContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  listItemText: {
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    color: 'red',
     fontSize: 16,
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
-  deleteButton: {
-    backgroundColor: '#FF0000',
-    padding: 10,
-    borderRadius: 5,
-  },
-  deleteButtonText: {
-    color: '#FFFFFF',
+  header: {
+    fontSize: 20,
     fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  detail: {
+    fontSize: 16,
+    marginVertical: 5,
   },
 });
