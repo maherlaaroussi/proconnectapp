@@ -23,17 +23,17 @@ export default function App() {
         <Stack.Screen
           name="Contacts"
           component={ContactList}
-          options={{ title: 'Liste de Contacts' }}
+          options={{ title: 'ProConnect' }}
         />
         <Stack.Screen
           name="Détails du Contact"
           component={ContactDetail}
-          options={{ title: 'Détails du Contact' }}
+          options={{ title: 'ProConnect' }}
         />
         <Stack.Screen
           name="Nouveau Contact"
           component={ContactForm}
-          options={{ title: 'Ajouter un Contact' }}
+          options={{ title: 'ProConnect' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
