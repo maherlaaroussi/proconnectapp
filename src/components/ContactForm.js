@@ -8,7 +8,12 @@ export default function ContactForm({ navigation }) {
     lastName: '',
     email: '',
     phoneNumber: '',
-    // Ajoute d'autres champs si nécessaire
+    opportunity: '',
+    linkedInProfile: '',
+    relationship: '',
+    position: '',
+    company: '',
+    companyWebsite: '',
   });
 
   const creerContact = () => {
@@ -49,7 +54,42 @@ export default function ContactForm({ navigation }) {
         onChangeText={(text) => setContact({ ...contact, phoneNumber: text })}
         keyboardType="phone-pad"
       />
-      {/* Ajoute d'autres champs si nécessaire */}
+      <TextInput
+        style={globalStyles.input}
+        placeholder="Opportunity"
+        value={contact.opportunity}
+        onChangeText={(text) => setContact({ ...contact, opportunity: text })}
+      />
+      <TextInput
+        style={globalStyles.input}
+        placeholder="Profil LinkedIn"
+        value={contact.linkedInProfile}
+        onChangeText={(text) => setContact({ ...contact, linkedInProfile: text })}
+      />
+      <TextInput
+        style={globalStyles.input}
+        placeholder="Relationship"
+        value={contact.relationship}
+        onChangeText={(text) => setContact({ ...contact, relationship: text })}
+      />
+      <TextInput
+        style={globalStyles.input}
+        placeholder="Position"
+        value={contact.position}
+        onChangeText={(text) => setContact({ ...contact, position: text })}
+      />
+      <TextInput
+        style={globalStyles.input}
+        placeholder="Société"
+        value={contact.company}
+        onChangeText={(text) => setContact({ ...contact, company: text })}
+      />
+      <TextInput
+        style={globalStyles.input}
+        placeholder="Site web de la société"
+        value={contact.companyWebsite}
+        onChangeText={(text) => setContact({ ...contact, companyWebsite: text })}
+      />
       <TouchableOpacity style={globalStyles.button} onPress={creerContact}>
         <Text style={globalStyles.buttonText}>Créer</Text>
       </TouchableOpacity>

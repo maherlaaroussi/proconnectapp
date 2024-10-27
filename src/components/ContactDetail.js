@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Linking, TouchableOpacity } from 'react-native';
 
 export default function ContactDetail({ route }) {
   const { id } = route.params;
@@ -52,16 +52,41 @@ export default function ContactDetail({ route }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Nom: {contact.firstName ?? 'Non disponible'} {contact.lastName ?? 'Non disponible'}</Text>
-      <Text style={styles.detail}>Email: {contact.email ?? 'Non disponible'}</Text>
-      <Text style={styles.detail}>Téléphone: {contact.phoneNumber ?? 'Non disponible'}</Text>
-      <Text style={styles.detail}>Opportunity: {contact.opportunity ?? 'Non disponible'}</Text>
-      <Text style={styles.detail}>LinkedIn Profile: {contact.linkedInProfile ?? 'Non disponible'}</Text>
-      <Text style={styles.detail}>Relationship: {contact.relationship ?? 'Non disponible'}</Text>
-      <Text style={styles.detail}>Contacted: {contact.contacted !== undefined ? (contact.contacted ? 'Oui' : 'Non') : 'Non disponible'}</Text>
-      <Text style={styles.detail}>Position: {contact.position ?? 'Non disponible'}</Text>
-      <Text style={styles.detail}>Company: {contact.company ?? 'Non disponible'}</Text>
-      <Text style={styles.detail}>Company Website: {contact.companyWebsite ?? 'Non disponible'}</Text>
+      <View style={styles.nameContainer}>
+        <Text style={styles.nameText}>{contact.firstName?.trim() !== '' ? contact.firstName : 'N/A'} {contact.lastName?.trim() !== '' ? contact.lastName : 'N/A'}</Text>
+        {contact.linkedInProfile?.trim() !== '' && (
+          <TouchableOpacity
+            style={styles.linkedinButton}
+            onPress={() => Linking.openURL(contact.linkedInProfile)}
+          >
+            <Text style={styles.linkedinButtonText}>LinkedIn</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.header}>Informations Générales</Text>
+        <Text style={styles.detail}>Email: {contact.email?.trim() !== '' ? contact.email : 'N/A'}</Text>
+        <Text style={styles.detail}>Téléphone: {contact.phoneNumber?.trim() !== '' ? contact.phoneNumber : 'N/A'}</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.header}>Informations Professionnelles</Text>
+        <Text style={styles.detail}>Opportunity: {contact.opportunity?.trim() !== '' ? contact.opportunity : 'N/A'}</Text>
+        <Text style={styles.detail}>Position: {contact.position?.trim() !== '' ? contact.position : 'N/A'}</Text>
+        <Text style={styles.detail}>Company: {contact.company?.trim() !== '' ? contact.company : 'N/A'}</Text>
+        {contact.companyWebsite?.trim() !== '' && (
+          <Text style={[styles.detail, styles.link]} onPress={() => Linking.openURL(contact.companyWebsite)}>
+            Company Website
+          </Text>
+        )}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.header}>Réseaux et Relations</Text>
+        <Text style={styles.detail}>Relationship: {contact.relationship?.trim() !== '' ? contact.relationship : 'N/A'}</Text>
+        <Text style={styles.detail}>Contacté: {contact.contacted !== undefined ? (contact.contacted ? 'Oui' : 'Non') : 'N/A'}</Text>
+      </View>
     </ScrollView>
   );
 }
@@ -87,6 +112,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  nameContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  nameText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  linkedinButton: {
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#0077B5',
+    borderRadius: 5,
+  },
+  linkedinButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  section: {
+    marginBottom: 20,
+  },
   header: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -95,5 +143,9 @@ const styles = StyleSheet.create({
   detail: {
     fontSize: 16,
     marginVertical: 5,
+  },
+  link: {
+    color: '#1E90FF',
+    textDecorationLine: 'underline',
   },
 });

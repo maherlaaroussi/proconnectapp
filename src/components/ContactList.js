@@ -55,11 +55,14 @@ export default function ContactList({ navigation }) {
               onPress={() => navigation.navigate('Détails du Contact', { id: item.id })}
             >
               <Text style={styles.listItemText}>
-                {item.firstName} {item.lastName}
+                {item.firstName && item.firstName.trim() !== '' ? item.firstName : 'N/A'} {item.lastName && item.lastName.trim() !== '' ? item.lastName : 'N/A'}
               </Text>
-              <Text style={{ color: '#666' }}>{item.email}</Text>
-              <Text style={{ color: '#666', fontStyle: 'italic' }}>Société: {item.company ?? 'Non disponible'}</Text>
+              <Text style={{ color: '#666' }}>{item.email && item.email.trim() !== '' ? item.email : 'N/A'}</Text>
             </TouchableOpacity>
+            <View style={styles.additionalInfoContainer}>
+              <Text style={styles.additionalInfo}>{item.company && item.company.trim() !== '' ? item.company : 'N/A'}</Text>
+              <Text style={styles.additionalInfo}>{item.phoneNumber && item.phoneNumber.trim() !== '' ? item.phoneNumber : 'N/A'}</Text>
+            </View>
           </View>
         )}
       />
@@ -95,5 +98,13 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
+  },
+  additionalInfoContainer: {
+    marginLeft: 10,
+    alignItems: 'flex-end',
+  },
+  additionalInfo: {
+    color: '#666',
+    fontStyle: 'italic',
   },
 });
