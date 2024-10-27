@@ -7,14 +7,22 @@ export default function ContactList({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredContacts, setFilteredContacts] = useState([]);
 
-  useEffect(() => {
+  const fetchContacts = () => {
     fetch('https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact')
       .then((response) => response.json())
       .then((data) => {
         setContacts(data);
         setFilteredContacts(data);
       });
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchContacts();
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchContacts();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const handleSearch = (text) => {
     setSearchQuery(text);
@@ -45,6 +53,7 @@ export default function ContactList({ navigation }) {
         value={searchQuery}
         onChangeText={handleSearch}
       />
+      <Text style={styles.totalContactsText}>Nombre total de contacts: {filteredContacts.length}</Text>
       <FlatList
         data={filteredContacts}
         keyExtractor={(item) => item.id}
@@ -98,6 +107,12 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
+  },
+  totalContactsText: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#333',
+    fontWeight: 'bold',
   },
   additionalInfoContainer: {
     marginLeft: 10,

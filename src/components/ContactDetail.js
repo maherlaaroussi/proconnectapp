@@ -37,16 +37,23 @@ export default function ContactDetail({ route, navigation }) {
         {
           text: "Supprimer",
           onPress: () => {
+            console.log("Tentative de suppression du contact avec l'id:", id);
             fetch(`https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact/${id}`, {
               method: 'DELETE',
-            }).then(() => {
-              navigation.navigate('Contacts');
-            }).catch((error) => {
-              console.error("Erreur lors de la suppression:", error);
-              Alert.alert("Erreur", "Une erreur est survenue lors de la suppression du contact.", [
-                { text: "OK" }
-              ]);
-            });
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error('Erreur lors de la suppression du contact');
+                }
+                console.log("Contact supprimé avec succès");
+                navigation.navigate('Contacts');
+              })
+              .catch((error) => {
+                console.error("Erreur lors de la suppression:", error);
+                Alert.alert("Erreur", "Une erreur est survenue lors de la suppression du contact.", [
+                  { text: "OK" }
+                ]);
+              });
           },
           style: "destructive"
         }
@@ -86,7 +93,10 @@ export default function ContactDetail({ route, navigation }) {
         {contact.linkedInProfile?.trim() !== '' && (
           <TouchableOpacity
             style={styles.linkedinButton}
-            onPress={() => Linking.openURL(contact.linkedInProfile)}
+            onPress={() => {
+              const url = contact.linkedInProfile.startsWith('http') ? contact.linkedInProfile : `https://${contact.linkedInProfile}`;
+              Linking.openURL(url);
+            }}
           >
             <Text style={styles.linkedinButtonText}>in</Text>
           </TouchableOpacity>
@@ -107,9 +117,14 @@ export default function ContactDetail({ route, navigation }) {
         <Text style={styles.detail}>Position: {contact.position?.trim() !== '' ? contact.position : 'N/A'}</Text>
         <Text style={styles.detail}>Company: {contact.company?.trim() !== '' ? contact.company : 'N/A'}</Text>
         {contact.companyWebsite?.trim() !== '' && (
-          <Text style={[styles.detail, styles.link]} onPress={() => Linking.openURL(contact.companyWebsite)}>
-            Company Website
-          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              const url = contact.companyWebsite.startsWith('http') ? contact.companyWebsite : `https://${contact.companyWebsite}`;
+              Linking.openURL(url);
+            }}
+          >
+            <Text style={[styles.detail, styles.link]}>Company Website</Text>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -119,9 +134,11 @@ export default function ContactDetail({ route, navigation }) {
         <Text style={styles.detail}>Contacté: {contact.contacted !== undefined ? (contact.contacted ? 'Oui' : 'Non') : 'N/A'}</Text>
       </View>
 
-      <TouchableOpacity style={styles.deleteButton} onPress={supprimerContact}>
-        <Text style={styles.deleteButtonText}>Supprimer le Contact</Text>
-      </TouchableOpacity>
+      <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 30 }}>
+        <TouchableOpacity style={styles.deleteButton} onPress={supprimerContact}>
+          <Text style={styles.deleteButtonText}>Supprimer le Contact</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -188,13 +205,14 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: '#FF0000',
-    padding: 15,
+    padding: 10,
     borderRadius: 5,
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   deleteButtonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    fontSize: 14,
   },
 });
