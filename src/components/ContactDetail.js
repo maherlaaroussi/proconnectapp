@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Linking, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Linking, TouchableOpacity } from 'react-native';
 
 export default function ContactDetail({ route, navigation }) {
   const { id } = route.params;
   const [contact, setContact] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteTimeout, setDeleteTimeout] = useState(null);
 
   useEffect(() => {
     const fetchContact = async () => {
@@ -26,24 +28,16 @@ export default function ContactDetail({ route, navigation }) {
     fetchContact();
   }, [id]);
 
-  const supprimerContact = async () => {
-    Alert.alert(
-      "Supprimer le contact",
-      "Êtes-vous sûr de vouloir supprimer ce contact ?",
-      [
-        {
-          text: "Annuler",
-          style: "cancel"
-        },
-        {
-          text: "Supprimer",
-          onPress: () => {
-            supprimerContactAPI();
-          },
-          style: "destructive"
-        }
-      ]
-    );
+  const handleDeletePress = () => {
+    if (deleteConfirm) {
+      supprimerContactAPI();
+    } else {
+      setDeleteConfirm(true);
+      const timeout = setTimeout(() => {
+        setDeleteConfirm(false);
+      }, 5000);
+      setDeleteTimeout(timeout);
+    }
   };
 
   const supprimerContactAPI = async () => {
@@ -62,6 +56,9 @@ export default function ContactDetail({ route, navigation }) {
       Alert.alert("Erreur", "Une erreur est survenue lors de la suppression du contact.", [
         { text: "OK" }
       ]);
+    } finally {
+      clearTimeout(deleteTimeout);
+      setDeleteConfirm(false);
     }
   };
 
@@ -142,8 +139,8 @@ export default function ContactDetail({ route, navigation }) {
       </ScrollView>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.deleteButton} onPress={supprimerContact}>
-          <Text style={styles.deleteButtonText}>Supprimer le contact</Text>
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePress}>
+          <Text style={styles.deleteButtonText}>{deleteConfirm ? 'Confirmer la suppression' : 'Voulez-vous vraiment supprimer le contact ?'}</Text>
         </TouchableOpacity>
       </View>
     </View>
