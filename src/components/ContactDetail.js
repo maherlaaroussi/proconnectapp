@@ -92,17 +92,6 @@ export default function ContactDetail({ route, navigation }) {
       <ScrollView style={styles.container}>
         <View style={styles.nameContainer}>
           <Text style={styles.nameText}>{contact.firstName?.trim() !== '' ? contact.firstName : 'N/A'} {contact.lastName?.trim() !== '' ? contact.lastName : 'N/A'}</Text>
-          {contact.linkedInProfile?.trim() !== '' && (
-            <TouchableOpacity
-              style={styles.linkedinButton}
-              onPress={() => {
-                const url = contact.linkedInProfile.startsWith('http') ? contact.linkedInProfile : `https://${contact.linkedInProfile}`;
-                Linking.openURL(url);
-              }}
-            >
-              <Text style={styles.linkedinButtonText}>in</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         <View style={{ height: 20 }} />
@@ -118,6 +107,27 @@ export default function ContactDetail({ route, navigation }) {
           <Text style={styles.detail}>Opportunity: {contact.opportunity?.trim() !== '' ? contact.opportunity : 'N/A'}</Text>
           <Text style={styles.detail}>Position: {contact.position?.trim() !== '' ? contact.position : 'N/A'}</Text>
           <Text style={styles.detail}>Company: {contact.company?.trim() !== '' ? contact.company : 'N/A'}</Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.header}>Réseaux et relations</Text>
+          <Text style={styles.detail}>Relationship: {contact.relationship?.trim() !== '' ? contact.relationship : 'N/A'}</Text>
+          <Text style={styles.detail}>Contacté: {contact.contacted !== undefined ? (contact.contacted ? 'Oui' : 'Non') : 'N/A'}</Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.header}>Liens utiles</Text>
+          {contact.linkedInProfile?.trim() !== '' && (
+            <TouchableOpacity
+              style={styles.linkedinButton}
+              onPress={() => {
+                const url = contact.linkedInProfile.startsWith('http') ? contact.linkedInProfile : `https://${contact.linkedInProfile}`;
+                Linking.openURL(url);
+              }}
+            >
+              <Text style={styles.linkedinButtonText}>LinkedIn Profile</Text>
+            </TouchableOpacity>
+          )}
           {contact.companyWebsite?.trim() !== '' && (
             <TouchableOpacity
               style={styles.companyWebsiteButton}
@@ -126,21 +136,15 @@ export default function ContactDetail({ route, navigation }) {
                 Linking.openURL(url);
               }}
             >
-              <Text style={[styles.detail, styles.companyWebsiteText]}>Company website</Text>
+              <Text style={styles.companyWebsiteButtonText}>Company Website</Text>
             </TouchableOpacity>
           )}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.header}>Réseaux et relations</Text>
-          <Text style={styles.detail}>Relationship: {contact.relationship?.trim() !== '' ? contact.relationship : 'N/A'}</Text>
-          <Text style={styles.detail}>Contacté: {contact.contacted !== undefined ? (contact.contacted ? 'Oui' : 'Non') : 'N/A'}</Text>
         </View>
       </ScrollView>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePress}>
-          <Text style={styles.deleteButtonText}>{deleteConfirm ? 'Confirmer la suppression' : 'Voulez-vous vraiment supprimer le contact ?'}</Text>
+          <Text style={styles.deleteButtonText}>{deleteConfirm ? 'Confirmeez-vous la suppression ?' : 'Supprimer le contact'}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -182,17 +186,29 @@ const styles = StyleSheet.create({
   },
   linkedinButton: {
     marginTop: 10,
-    width: 40,
-    height: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     backgroundColor: '#0077B5',
-    borderRadius: 20,
-    justifyContent: 'center',
+    borderRadius: 5,
     alignItems: 'center',
   },
   linkedinButtonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 16,
+  },
+  companyWebsiteButton: {
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    backgroundColor: '#1E90FF',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  companyWebsiteButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   section: {
     marginBottom: 20,
@@ -205,24 +221,6 @@ const styles = StyleSheet.create({
   detail: {
     fontSize: 16,
     marginVertical: 5,
-  },
-  link: {
-    color: '#1E90FF',
-    textDecorationLine: 'underline',
-  },
-  companyWebsiteButton: {
-    marginTop: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    backgroundColor: '#1E90FF',
-    borderRadius: 5,
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-  },
-  companyWebsiteText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
   buttonContainer: {
     padding: 20,
