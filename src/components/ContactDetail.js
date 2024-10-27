@@ -8,24 +8,25 @@ export default function ContactDetail({ route, navigation }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact/${id}`)
-      .then((response) => {
+    const fetchContact = async () => {
+      try {
+        const response = await fetch(`https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact/${id}`);
         if (!response.ok) {
           throw new Error('Erreur lors de la récupération des données du contact');
         }
-        return response.json();
-      })
-      .then((data) => {
+        const data = await response.json();
         setContact(data);
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError(err.message);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchContact();
   }, [id]);
 
-  const supprimerContact = () => {
+  const supprimerContact = async () => {
     Alert.alert(
       "Supprimer Contact",
       "Êtes-vous sûr de vouloir supprimer ce contact ?",
@@ -36,24 +37,23 @@ export default function ContactDetail({ route, navigation }) {
         },
         {
           text: "Supprimer",
-          onPress: () => {
-            console.log("Tentative de suppression du contact avec l'id:", id);
-            fetch(`https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact/${id}`, {
-              method: 'DELETE',
-            })
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error('Erreur lors de la suppression du contact');
-                }
-                console.log("Contact supprimé avec succès");
-                navigation.navigate('Contacts');
-              })
-              .catch((error) => {
-                console.error("Erreur lors de la suppression:", error);
-                Alert.alert("Erreur", "Une erreur est survenue lors de la suppression du contact.", [
-                  { text: "OK" }
-                ]);
+          onPress: async () => {
+            try {
+              console.log("Tentative de suppression du contact avec l'id:", id);
+              const response = await fetch(`https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact/${id}`, {
+                method: 'DELETE',
               });
+              if (!response.ok) {
+                throw new Error('Erreur lors de la suppression du contact');
+              }
+              console.log("Contact supprimé avec succès");
+              navigation.navigate('Contacts');
+            } catch (error) {
+              console.error("Erreur lors de la suppression:", error);
+              Alert.alert("Erreur", "Une erreur est survenue lors de la suppression du contact.", [
+                { text: "OK" }
+              ]);
+            }
           },
           style: "destructive"
         }
@@ -118,12 +118,13 @@ export default function ContactDetail({ route, navigation }) {
         <Text style={styles.detail}>Company: {contact.company?.trim() !== '' ? contact.company : 'N/A'}</Text>
         {contact.companyWebsite?.trim() !== '' && (
           <TouchableOpacity
+            style={styles.companyWebsiteButton}
             onPress={() => {
               const url = contact.companyWebsite.startsWith('http') ? contact.companyWebsite : `https://${contact.companyWebsite}`;
               Linking.openURL(url);
             }}
           >
-            <Text style={[styles.detail, styles.link]}>Company Website</Text>
+            <Text style={[styles.detail, styles.companyWebsiteText]}>Company Website</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -202,6 +203,18 @@ const styles = StyleSheet.create({
   link: {
     color: '#1E90FF',
     textDecorationLine: 'underline',
+  },
+  companyWebsiteButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#1E90FF',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  companyWebsiteText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   deleteButton: {
     backgroundColor: '#FF0000',
