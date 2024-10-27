@@ -28,7 +28,7 @@ export default function ContactDetail({ route, navigation }) {
 
   const supprimerContact = async () => {
     Alert.alert(
-      "Supprimer Contact",
+      "Supprimer le contact",
       "Êtes-vous sûr de vouloir supprimer ce contact ?",
       [
         {
@@ -37,28 +37,32 @@ export default function ContactDetail({ route, navigation }) {
         },
         {
           text: "Supprimer",
-          onPress: async () => {
-            try {
-              console.log("Tentative de suppression du contact avec l'id:", id);
-              const response = await fetch(`https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact/${id}`, {
-                method: 'DELETE',
-              });
-              if (!response.ok) {
-                throw new Error('Erreur lors de la suppression du contact');
-              }
-              console.log("Contact supprimé avec succès");
-              navigation.navigate('Contacts');
-            } catch (error) {
-              console.error("Erreur lors de la suppression:", error);
-              Alert.alert("Erreur", "Une erreur est survenue lors de la suppression du contact.", [
-                { text: "OK" }
-              ]);
-            }
+          onPress: () => {
+            supprimerContactAPI();
           },
           style: "destructive"
         }
       ]
     );
+  };
+
+  const supprimerContactAPI = async () => {
+    try {
+      console.log("Tentative de suppression du contact avec l'id:", id);
+      const response = await fetch(`https://proconnectapi-exaqapgkgkgad2cn.francecentral-01.azurewebsites.net/contact/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression du contact');
+      }
+      console.log("Contact supprimé avec succès");
+      navigation.navigate('Contacts');
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
+      Alert.alert("Erreur", "Une erreur est survenue lors de la suppression du contact.", [
+        { text: "OK" }
+      ]);
+    }
   };
 
   if (loading) {
@@ -87,64 +91,69 @@ export default function ContactDetail({ route, navigation }) {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.nameContainer}>
-        <Text style={styles.nameText}>{contact.firstName?.trim() !== '' ? contact.firstName : 'N/A'} {contact.lastName?.trim() !== '' ? contact.lastName : 'N/A'}</Text>
-        {contact.linkedInProfile?.trim() !== '' && (
-          <TouchableOpacity
-            style={styles.linkedinButton}
-            onPress={() => {
-              const url = contact.linkedInProfile.startsWith('http') ? contact.linkedInProfile : `https://${contact.linkedInProfile}`;
-              Linking.openURL(url);
-            }}
-          >
-            <Text style={styles.linkedinButtonText}>in</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+    <View style={styles.flexContainer}>
+      <ScrollView style={styles.container}>
+        <View style={styles.nameContainer}>
+          <Text style={styles.nameText}>{contact.firstName?.trim() !== '' ? contact.firstName : 'N/A'} {contact.lastName?.trim() !== '' ? contact.lastName : 'N/A'}</Text>
+          {contact.linkedInProfile?.trim() !== '' && (
+            <TouchableOpacity
+              style={styles.linkedinButton}
+              onPress={() => {
+                const url = contact.linkedInProfile.startsWith('http') ? contact.linkedInProfile : `https://${contact.linkedInProfile}`;
+                Linking.openURL(url);
+              }}
+            >
+              <Text style={styles.linkedinButtonText}>in</Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
-      <View style={{ height: 20 }} />
+        <View style={{ height: 20 }} />
 
-      <View style={styles.section}>
-        <Text style={styles.header}>Informations Générales</Text>
-        <Text style={styles.detail}>Email: {contact.email?.trim() !== '' ? contact.email : 'N/A'}</Text>
-        <Text style={styles.detail}>Téléphone: {contact.phoneNumber?.trim() !== '' ? contact.phoneNumber : 'N/A'}</Text>
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.header}>Informations générales</Text>
+          <Text style={styles.detail}>Email: {contact.email?.trim() !== '' ? contact.email : 'N/A'}</Text>
+          <Text style={styles.detail}>Téléphone: {contact.phoneNumber?.trim() !== '' ? contact.phoneNumber : 'N/A'}</Text>
+        </View>
 
-      <View style={styles.section}>
-        <Text style={styles.header}>Informations Professionnelles</Text>
-        <Text style={styles.detail}>Opportunity: {contact.opportunity?.trim() !== '' ? contact.opportunity : 'N/A'}</Text>
-        <Text style={styles.detail}>Position: {contact.position?.trim() !== '' ? contact.position : 'N/A'}</Text>
-        <Text style={styles.detail}>Company: {contact.company?.trim() !== '' ? contact.company : 'N/A'}</Text>
-        {contact.companyWebsite?.trim() !== '' && (
-          <TouchableOpacity
-            style={styles.companyWebsiteButton}
-            onPress={() => {
-              const url = contact.companyWebsite.startsWith('http') ? contact.companyWebsite : `https://${contact.companyWebsite}`;
-              Linking.openURL(url);
-            }}
-          >
-            <Text style={[styles.detail, styles.companyWebsiteText]}>Company Website</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.header}>Informations professionnelles</Text>
+          <Text style={styles.detail}>Opportunity: {contact.opportunity?.trim() !== '' ? contact.opportunity : 'N/A'}</Text>
+          <Text style={styles.detail}>Position: {contact.position?.trim() !== '' ? contact.position : 'N/A'}</Text>
+          <Text style={styles.detail}>Company: {contact.company?.trim() !== '' ? contact.company : 'N/A'}</Text>
+          {contact.companyWebsite?.trim() !== '' && (
+            <TouchableOpacity
+              style={styles.companyWebsiteButton}
+              onPress={() => {
+                const url = contact.companyWebsite.startsWith('http') ? contact.companyWebsite : `https://${contact.companyWebsite}`;
+                Linking.openURL(url);
+              }}
+            >
+              <Text style={[styles.detail, styles.companyWebsiteText]}>Company website</Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
-      <View style={styles.section}>
-        <Text style={styles.header}>Réseaux et Relations</Text>
-        <Text style={styles.detail}>Relationship: {contact.relationship?.trim() !== '' ? contact.relationship : 'N/A'}</Text>
-        <Text style={styles.detail}>Contacté: {contact.contacted !== undefined ? (contact.contacted ? 'Oui' : 'Non') : 'N/A'}</Text>
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.header}>Réseaux et relations</Text>
+          <Text style={styles.detail}>Relationship: {contact.relationship?.trim() !== '' ? contact.relationship : 'N/A'}</Text>
+          <Text style={styles.detail}>Contacté: {contact.contacted !== undefined ? (contact.contacted ? 'Oui' : 'Non') : 'N/A'}</Text>
+        </View>
+      </ScrollView>
 
-      <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 30 }}>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.deleteButton} onPress={supprimerContact}>
-          <Text style={styles.deleteButtonText}>Supprimer le Contact</Text>
+          <Text style={styles.deleteButtonText}>Supprimer le contact</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  flexContainer: {
+    flex: 1,
+  },
   container: {
     padding: 20,
     backgroundColor: '#FFFFFF',
@@ -206,22 +215,28 @@ const styles = StyleSheet.create({
   },
   companyWebsiteButton: {
     marginTop: 10,
-    padding: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
     backgroundColor: '#1E90FF',
     borderRadius: 5,
     alignItems: 'center',
+    alignSelf: 'flex-start',
   },
   companyWebsiteText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
   },
+  buttonContainer: {
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+  },
   deleteButton: {
     backgroundColor: '#FF0000',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
-    marginVertical: 10,
   },
   deleteButtonText: {
     color: '#FFFFFF',

@@ -109,10 +109,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   totalContactsText: {
-    fontSize: 16,
+    fontSize: 12,
     marginBottom: 10,
     color: '#333',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   additionalInfoContainer: {
     marginLeft: 10,
