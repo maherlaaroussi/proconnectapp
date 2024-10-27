@@ -81,10 +81,19 @@ export default function ContactDetail({ route, navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      
-<View style={{ height: 20 }} />
-)}
+      <View style={styles.nameContainer}>
+        <Text style={styles.nameText}>{contact.firstName?.trim() !== '' ? contact.firstName : 'N/A'} {contact.lastName?.trim() !== '' ? contact.lastName : 'N/A'}</Text>
+        {contact.linkedInProfile?.trim() !== '' && (
+          <TouchableOpacity
+            style={styles.linkedinButton}
+            onPress={() => Linking.openURL(contact.linkedInProfile)}
+          >
+            <Text style={styles.linkedinButtonText}>in</Text>
+          </TouchableOpacity>
+        )}
       </View>
+
+      <View style={{ height: 20 }} />
 
       <View style={styles.section}>
         <Text style={styles.header}>Informations Générales</Text>
@@ -149,14 +158,17 @@ const styles = StyleSheet.create({
   },
   linkedinButton: {
     marginTop: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    width: 40,
+    height: 40,
     backgroundColor: '#0077B5',
-    borderRadius: 5,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   linkedinButtonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    fontSize: 18,
   },
   section: {
     marginBottom: 20,
