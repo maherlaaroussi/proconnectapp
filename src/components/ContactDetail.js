@@ -116,35 +116,37 @@ export default function ContactDetail({ route, navigation }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.header}>Liens utiles</Text>
-          {contact.linkedInProfile?.trim() !== '' && (
-            <TouchableOpacity
-              style={styles.linkedinButton}
-              onPress={() => {
-                const url = contact.linkedInProfile.startsWith('http') ? contact.linkedInProfile : `https://${contact.linkedInProfile}`;
-                Linking.openURL(url);
-              }}
-            >
-              <Text style={styles.linkedinButtonText}>LinkedIn Profile</Text>
-            </TouchableOpacity>
-          )}
-          {contact.companyWebsite?.trim() !== '' && (
-            <TouchableOpacity
-              style={styles.companyWebsiteButton}
-              onPress={() => {
-                const url = contact.companyWebsite.startsWith('http') ? contact.companyWebsite : `https://${contact.companyWebsite}`;
-                Linking.openURL(url);
-              }}
-            >
-              <Text style={styles.companyWebsiteButtonText}>Company Website</Text>
-            </TouchableOpacity>
-          )}
+          <Text style={styles.header}>Liens</Text>
+          <View style={styles.linkButtonsContainer}>
+            {contact.linkedInProfile?.trim() !== '' && (
+              <TouchableOpacity
+                style={styles.compactButton}
+                onPress={() => {
+                  const url = contact.linkedInProfile.startsWith('http') ? contact.linkedInProfile : `https://${contact.linkedInProfile}`;
+                  Linking.openURL(url);
+                }}
+              >
+                <Text style={styles.compactButtonText}>LinkedIn</Text>
+              </TouchableOpacity>
+            )}
+            {contact.companyWebsite?.trim() !== '' && (
+              <TouchableOpacity
+                style={styles.compactButton}
+                onPress={() => {
+                  const url = contact.companyWebsite.startsWith('http') ? contact.companyWebsite : `https://${contact.companyWebsite}`;
+                  Linking.openURL(url);
+                }}
+              >
+                <Text style={styles.compactButtonText}>Website</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </ScrollView>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePress}>
-          <Text style={styles.deleteButtonText}>{deleteConfirm ? 'Confirmeez-vous la suppression ?' : 'Supprimer le contact'}</Text>
+        <TouchableOpacity style={[styles.deleteButton, styles.adjustedDeleteButton]} onPress={handleDeletePress}>
+          <Text style={styles.deleteButtonText}>{deleteConfirm ? 'Confirmez-vous la suppression ?' : 'Supprimer le contact'}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -184,32 +186,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  linkedinButton: {
-    marginTop: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: '#0077B5',
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  linkedinButtonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  companyWebsiteButton: {
-    marginTop: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: '#1E90FF',
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  companyWebsiteButtonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
   section: {
     marginBottom: 20,
   },
@@ -222,8 +198,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 5,
   },
+  linkButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+  compactButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: '#1E90FF',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  compactButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
   buttonContainer: {
-    padding: 20,
+    padding: 10,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
   },
@@ -232,6 +225,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
+  },
+  adjustedDeleteButton: {
+    maxWidth: '90%',
   },
   deleteButtonText: {
     color: '#FFFFFF',
